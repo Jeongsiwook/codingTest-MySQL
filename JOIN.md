@@ -1,0 +1,47 @@
+# JOIN
+## 없어진 기록 찾기
+### LEFT OUTER JOIN
+- 입양을 간 기록은 있는데, 보호소에 들어온 기록이 없는 ID와 이름을 조회
+```sql
+SELECT O.ANIMAL_ID, O.NAME
+FROM ANIMAL_OUTS O
+LEFT OUTER JOIN ANIMAL_INS I
+ON O.ANIMAL_ID = I.ANIMAL_ID
+WHERE I.ANIMAL_ID is NULL
+ORDER BY O.ANIMAL_ID
+```
+
+## 있었는데요 없었습니다
+### A JOIN B
+- 보호 시작일보다 입양일이 더 빠른 동물의 아이디와 이름을 조회
+```sql
+SELECT I.ANIMAL_ID, I.NAME 
+FROM ANIMAL_INS AS I JOIN ANIMAL_OUTS AS O 
+WHERE I.ANIMAL_ID = O.ANIMAL_ID AND O.DATETIME <= I.DATETIME 
+ORDER BY I.DATETIME
+```
+
+## 오랜 기간 보호한 동물1
+### LEFT JOIN과 LEFT OUTER JOIN은 같음
+- 입양을 못 간 동물 중, 가장 오래 보호소에 있었던 동물 3마리의 이름과 보호 시작일
+```sql
+SELECT A.NAME, A.DATETIME
+FROM ANIMAL_INS A 
+LEFT OUTER JOIN ANIMAL_OUTS B 
+ON A.ANIMAL_ID = B.ANIMAL_ID
+WHERE B.ANIMAL_ID IS NULL
+ORDER BY A.DATETIME
+LIMIT 3
+```
+
+## 보호소에서 중성화한 동물
+### JOIN
+- 들어올 당시에는 중성화되지 않았지만, 보호소를 나갈 당시에는 중성화된 동물 조회
+```sql
+SELECT O.ANIMAL_ID, O.ANIMAL_TYPE, O.NAME
+FROM ANIMAL_INS I 
+JOIN ANIMAL_OUTS O
+ON I.ANIMAL_ID = O.ANIMAL_ID
+WHERE I.SEX_UPON_INTAKE like '%Intact%' AND (O.SEX_UPON_OUTCOME like '%Spayed%' or O.SEX_UPON_OUTCOME like '%Neutered%')
+ORDER BY O.ANIMAL_ID
+```
